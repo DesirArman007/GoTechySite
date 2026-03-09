@@ -46,7 +46,7 @@ export const Hero: React.FC = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative min-h-screen pt-24 flex items-center justify-center overflow-hidden">
+    <div ref={containerRef} style={{ position: 'relative' }} className="relative min-h-screen pt-24 flex items-center justify-center overflow-hidden">
 
       {/* Background Elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-brand-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
