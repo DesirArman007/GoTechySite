@@ -45,7 +45,7 @@ app.use(cors({
         'http://localhost:5173',
         'http://127.0.0.1:3000',
         'http://127.0.0.1:5173',
-        'https://go-techy-site.vercel.app/',
+        'https://go-techy-site.vercel.app',
     ],
     credentials: true
 }));
