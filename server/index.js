@@ -1,0 +1,34 @@
+import connectDB from './config/db.js';
+import app from './app.js';
+// Trigger Restart for Env
+import dotenv from 'dotenv';
+import { syncYouTubeVideos } from './services/youtubeSync.js';
+import cron from 'node-cron';
+
+dotenv.config();
+
+connectDB().then(() => {
+    app.listen(process.env.PORT || 8080, () => {
+
+        const isProduction = process.env.NODE_ENV === 'production';
+        console.log("Server started");
+        console.log(`Environment: ${isProduction ? 'Production' : 'Development'}`);
+        console.log(`PORT: ${process.env.PORT || 8080}`);
+        console.log(`HTTPS assumed: ${isProduction}`);
+        console.log(`Cookie config: secure=${isProduction}, sameSite=${isProduction ? 'none' : 'lax'}, partitioned=${isProduction}`);
+
+    })
+})
+    .catch((error) => {
+        console.error("Failed to connect to the database", error);
+    })
+
+// Sync YouTube videos every 12hours
+cron.schedule('0 */12 * * *', () => {
+    console.log('[Cron] Syncing YouTube videos...');
+    syncYouTubeVideos();
+});
+
+// Instagram reels are now managed manually via admin panel
+
+syncYouTubeVideos();
