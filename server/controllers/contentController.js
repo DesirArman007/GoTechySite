@@ -2,9 +2,7 @@ import { Video } from '../models/Video.js';
 import { Post } from '../models/Post.js';
 import axios from 'axios';
 
-// @desc    Get mixed content for homepage (latest Videos & Posts)
-// @route   GET /api/content/latest
-// @access  Public
+/** GET /api/content/latest — Fetches latest YouTube videos and Instagram posts for the homepage. */
 const getLatestContent = async (req, res) => {
     console.log(`[ContentController] ${req.method} ${req.originalUrl} called`);
 
@@ -16,7 +14,7 @@ const getLatestContent = async (req, res) => {
 
         if (CHANNEL_ID && API_KEY) {
             try {
-                // Uploads playlist ID (UC -> UU)
+                // YouTube channel IDs (UC...) map to upload playlists (UU...)
                 const uploadsPlaylistId = CHANNEL_ID.replace('UC', 'UU');
 
                 const response = await axios.get(
@@ -49,7 +47,7 @@ const getLatestContent = async (req, res) => {
 
             } catch (ytError) {
                 console.error("[ContentController] YouTube API Error:", ytError.message);
-                // Fallback to DB if API fails (optional, but good practice, though user asked for API)
+                // Fallback to synced DB records if YouTube API is unavailable
                 videos = await Video.find().sort({ publishedAt: -1 }).limit(6);
             }
         } else {
@@ -58,7 +56,7 @@ const getLatestContent = async (req, res) => {
 
         const posts = await Post.find().sort({ publishedAt: -1 }).limit(3);
 
-        // Determine latest content for Hero (YouTube or Instagram)
+        // Pick the most recent piece of content (video or post) for the homepage hero
         const allContent = [...videos, ...posts];
         allContent.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
         const latestHero = allContent.length > 0 ? allContent[0] : null;
@@ -84,20 +82,16 @@ const getLatestContent = async (req, res) => {
 };
 
 
-// ============================================
-// Manual Instagram Reel Entry API
-// ============================================
+
 
 import { uploadOnCloudinary } from '../config/cloudinary.js';
 
-// @desc    Add a new Instagram reel manually (with image upload)
-// @route   POST /api/content/instagram
-// @access  Admin
+/** POST /api/content/instagram — Admin: add an Instagram reel with thumbnail upload to Cloudinary. */
 const addInstagramReel = async (req, res) => {
     console.log(`[ContentController] ${req.method} ${req.originalUrl} - Adding Instagram reel`);
 
     try {
-        const { shortcode, caption } = req.body;
+        const { shortcode } = req.body;
         const thumbnailFile = req.file;
 
         if (!shortcode) {
@@ -114,7 +108,7 @@ const addInstagramReel = async (req, res) => {
             });
         }
 
-        // Upload image to Cloudinary
+
         console.log(`[ContentController] Uploading thumbnail to Cloudinary: ${thumbnailFile.path}`);
         const cloudinaryResult = await uploadOnCloudinary(thumbnailFile.path);
 
@@ -128,10 +122,10 @@ const addInstagramReel = async (req, res) => {
         const thumbnailUrl = cloudinaryResult.secure_url;
         console.log(`[ContentController] Cloudinary upload successful: ${thumbnailUrl}`);
 
-        // Create Instagram permalink
+
         const permalink = `https://www.instagram.com/reel/${shortcode}/`;
 
-        // Check if already exists
+        // Prevent duplicate entries by shortcode
         const existing = await Post.findOne({ platformId: shortcode });
         if (existing) {
             return res.status(400).json({
@@ -142,7 +136,7 @@ const addInstagramReel = async (req, res) => {
 
         const newPost = await Post.create({
             platformId: shortcode,
-            caption: caption || 'Instagram Reel',
+            caption: 'Instagram Reel',
             mediaUrl: permalink,
             thumbnail: thumbnailUrl,
             permalink: permalink,
@@ -168,9 +162,7 @@ const addInstagramReel = async (req, res) => {
 };
 
 
-// @desc    Get all Instagram reels
-// @route   GET /api/content/instagram
-// @access  Admin
+/** GET /api/content/instagram — Returns all manually-added Instagram reels. */
 const getInstagramReels = async (req, res) => {
     try {
         const reels = await Post.find({ source: 'instagram' }).sort({ publishedAt: -1 });
@@ -188,9 +180,7 @@ const getInstagramReels = async (req, res) => {
     }
 };
 
-// @desc    Delete an Instagram reel
-// @route   DELETE /api/content/instagram/:id
-// @access  Admin
+/** DELETE /api/content/instagram/:id — Admin: remove an Instagram reel. */
 const deleteInstagramReel = async (req, res) => {
     try {
         const { id } = req.params;

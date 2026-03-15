@@ -9,7 +9,7 @@ const cloudinaryConfig = {
     secure: true,
 };
 
-// Only apply config if keys are present (removes reliance on implicit CLOUDINARY_URL behavior)
+// Only configure if all credentials are present (avoids relying on CLOUDINARY_URL env)
 if (cloudinaryConfig.cloud_name && cloudinaryConfig.api_key && cloudinaryConfig.api_secret) {
     cloudinary.config(cloudinaryConfig);
 }

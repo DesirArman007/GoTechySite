@@ -13,7 +13,7 @@ export const syncYouTubeVideos = async () => {
             return;
         }
 
-        // Uploads playlist ID (UC -> UU)
+        // YouTube channel IDs (UC...) map to upload playlists (UU...)
         const uploadsPlaylistId = CHANNEL_ID.replace('UC', 'UU');
 
         const response = await axios.get(
@@ -31,14 +31,8 @@ export const syncYouTubeVideos = async () => {
         const items = response.data?.items || [];
         console.log('[YouTube Sync] Videos fetched:', items.length);
 
-        // Sort by published date (latest first)
-        items.sort(
-            (a, b) =>
-                new Date(b.snippet.publishedAt) -
-                new Date(a.snippet.publishedAt)
-        );
-
-        // Take only latest 6
+        // Sort by newest first and keep only 9 most recent videos
+        items.sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt));
         const latestVideos = items.slice(0, 9);
 
         for (const item of latestVideos) {

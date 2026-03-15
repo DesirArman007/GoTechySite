@@ -5,7 +5,7 @@
  */
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gotechy-jwt-secret-change-me';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const adminAuth = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -22,7 +22,7 @@ const adminAuth = (req, res, next) => {
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, JWT_SECRET);
 
-        // Attach admin info to request
+
         req.admin = { id: decoded.id, email: decoded.email };
 
         console.log(`[Auth] Admin authenticated: ${decoded.email} → ${req.method} ${req.originalUrl}`);

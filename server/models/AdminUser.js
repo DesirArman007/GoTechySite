@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gotechy-jwt-secret-change-me';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h';
 
 const adminUserSchema = new mongoose.Schema({
@@ -19,18 +19,18 @@ const adminUserSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-// Hash password before saving
+// Hash password on creation or change (12 rounds of bcrypt)
 adminUserSchema.pre('save', async function () {
     if (!this.isModified('password')) return;
     this.password = await bcrypt.hash(this.password, 12);
 });
 
-// Compare password method
+
 adminUserSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate JWT token
+
 adminUserSchema.methods.generateToken = function () {
     return jwt.sign(
         { id: this._id, email: this.email },

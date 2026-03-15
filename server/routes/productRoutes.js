@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { addProduct, searchProduct, getProducts, deleteProduct, togglePinProduct, updateProduct } from '../controllers/productController.js';
-import { cacheMiddleware, invalidateCache } from '../middleware/cache.js';
 import { adminAuth } from '../middleware/adminAuth.js';
+import { browserCache } from '../middleware/browserCache.js';
 
 const router = Router();
 
-router.get('/', cacheMiddleware('products', 300), getProducts);
-router.post('/', adminAuth, invalidateCache('products'), addProduct);
-router.get('/search', searchProduct); // Search is dynamic, maybe don't cache or short cache
-router.delete('/:id', adminAuth, invalidateCache('products'), deleteProduct);
-router.patch('/:id/pin', adminAuth, invalidateCache('products'), togglePinProduct);
-router.put('/:id', adminAuth, invalidateCache('products'), updateProduct);
+router.get('/', browserCache(300), getProducts);
+router.post('/', adminAuth, addProduct);
+router.get('/search', searchProduct);
+router.delete('/:id', adminAuth, deleteProduct);
+router.patch('/:id/pin', adminAuth, togglePinProduct);
+router.put('/:id', adminAuth, updateProduct);
 
 export default router;

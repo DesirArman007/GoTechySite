@@ -8,10 +8,10 @@ const seedAdmin = async () => {
     try {
         await connectDB();
 
-        const email = process.env.ADMIN_EMAIL || 'abhishekyadav6502@gmail.com';
-        const password = process.env.ADMIN_PASSWORD || 'GoTechy@2024';
+        const email = process.env.ADMIN_EMAIL;
+        const password = process.env.ADMIN_PASSWORD;
 
-        // Check if admin already exists
+
         const existing = await AdminUser.findOne({ email });
         if (existing) {
             console.log(`[Seed] Admin user already exists: ${email}`);

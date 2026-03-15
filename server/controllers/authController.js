@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import AdminUser from '../models/AdminUser.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gotechy-jwt-secret-change-me';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * POST /api/auth/login
@@ -18,7 +18,7 @@ export const login = async (req, res) => {
             });
         }
 
-        // Find admin by email
+
         const admin = await AdminUser.findOne({ email: email.toLowerCase() });
         if (!admin) {
             return res.status(401).json({
@@ -27,7 +27,7 @@ export const login = async (req, res) => {
             });
         }
 
-        // Compare password
+
         const isMatch = await admin.comparePassword(password);
         if (!isMatch) {
             return res.status(401).json({
@@ -36,7 +36,7 @@ export const login = async (req, res) => {
             });
         }
 
-        // Generate JWT from model method
+
         const token = admin.generateToken();
 
         console.log(`[Auth] Admin logged in: ${admin.email}`);
@@ -76,7 +76,7 @@ export const verifyToken = async (req, res) => {
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, JWT_SECRET);
 
-        // Optionally verify admin still exists in DB
+        // Ensure admin account hasn't been deleted since token was issued
         const admin = await AdminUser.findById(decoded.id).select('-password');
         if (!admin) {
             return res.status(401).json({

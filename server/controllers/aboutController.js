@@ -1,11 +1,9 @@
 import About from '../models/About.js';
 
-// @desc    Get About Us content
-// @route   GET /api/about
-// @access  Public
+/** GET /api/about — Returns the single About Us document. */
 export const getAboutContent = async (req, res) => {
     try {
-        // We only expect one document for "About Us"
+        // Only one About Us document exists in the collection
         const about = await About.findOne();
 
         res.status(200).json({
@@ -17,14 +15,12 @@ export const getAboutContent = async (req, res) => {
     }
 };
 
-// @desc    Update/Create About Us content
-// @route   POST /api/about
-// @access  Private (Admin)
+/** POST /api/about — Admin: create or update the About Us page content. */
 export const updateAboutContent = async (req, res) => {
     try {
         const { title, description, story, values, imageUrl } = req.body;
 
-        // Upsert: update if found, create if not
+
         const about = await About.findOneAndUpdate(
             {},
             { title, description, story, values, imageUrl },

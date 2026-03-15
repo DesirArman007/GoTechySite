@@ -1,8 +1,6 @@
 import { Product } from '../models/Product.js';
 
-// @desc    Get all products
-// @route   GET /api/products
-// @access  Public
+/** GET /api/products — Returns all products, newest first. */
 const getProducts = async (req, res) => {
     console.log(`[ProductController] ${req.method} ${req.originalUrl} called`);
 
@@ -28,9 +26,7 @@ const getProducts = async (req, res) => {
 };
 
 
-// @desc    Add a product
-// @route   POST /api/products
-// @access  Private (Admin)
+/** POST /api/products — Admin: create a new product listing. */
 const addProduct = async (req, res) => {
 
     console.log(`[ProductController] ${req.method} ${req.originalUrl} called`);
@@ -65,9 +61,11 @@ const searchProduct = async (req, res) => {
     console.log("[ProductController] Search query: ", productName);
 
     try {
+        // Escape regex metacharacters to prevent injection/ReDoS
+        const safeQuery = productName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const products = await Product.find({
             title: {
-                $regex: productName,
+                $regex: safeQuery,
                 $options: 'i'
             }
         }).sort({ createdAt: -1 });
@@ -113,7 +111,7 @@ const togglePinProduct = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
-        // If trying to pin, check the limit
+        // Enforce max 6 pinned products for homepage display
         if (!product.pinned) {
             const pinnedCount = await Product.countDocuments({ pinned: true });
             if (pinnedCount >= 6) {

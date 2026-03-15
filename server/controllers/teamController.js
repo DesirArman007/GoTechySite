@@ -1,9 +1,7 @@
 import { TeamMember } from '../models/TeamMember.js';
 import { uploadOnCloudinary } from "../config/cloudinary.js";
 
-// @desc    Get all team members
-// @route   GET /api/team
-// @access  Public
+/** GET /api/team — Returns all team members, sorted alphabetically. */
 const getTeamMembers = async (req, res) => {
 
     console.log(`[TeamController] ${req.method} ${req.originalUrl} called`);

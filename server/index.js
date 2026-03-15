@@ -1,6 +1,6 @@
 import connectDB from './config/db.js';
 import app from './app.js';
-// Trigger Restart for Env
+
 import dotenv from 'dotenv';
 import { syncYouTubeVideos } from './services/youtubeSync.js';
 import cron from 'node-cron';
@@ -23,12 +23,12 @@ connectDB().then(() => {
         console.error("Failed to connect to the database", error);
     })
 
-// Sync YouTube videos every 12hours
+// Sync YouTube videos every 12 hours via cron, and once on startup
 cron.schedule('0 */12 * * *', () => {
     console.log('[Cron] Syncing YouTube videos...');
     syncYouTubeVideos();
 });
 
-// Instagram reels are now managed manually via admin panel
+
 
 syncYouTubeVideos();
