@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Smile } from 'lucide-react';
 import { fetchAbout } from '../api';
 import { Footer } from '../components/Footer';
+import { AboutContent } from '../types';
 
-export const About: React.FC = () => {
-    const [data, setData] = useState<any>(null);
+export const About = () => {
+    const [data, setData] = useState<AboutContent | null>(null);
 
     useEffect(() => {
         fetchAbout().then(res => {

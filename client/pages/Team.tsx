@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { fetchTeam } from '../api';
@@ -54,12 +54,12 @@ const TeamCard: React.FC<TeamMember> = ({ name, role, avatar, bio, socials }) =>
     </motion.div>
 );
 
-export const Team: React.FC = () => {
-    const [team, setTeam] = React.useState<TeamMember[]>([]);
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState('');
+export const Team = () => {
+    const [team, setTeam] = useState<TeamMember[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchTeam()
             .then(res => {
                 if (res.success && Array.isArray(res.data)) {
@@ -69,7 +69,6 @@ export const Team: React.FC = () => {
                 }
             })
             .catch((err) => {
-                console.error("Team fetch error:", err);
                 setError(err.message || 'Unable to load team at the moment.');
             })
             .finally(() => setLoading(false));

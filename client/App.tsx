@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Home } from './pages/Home';
 import { Store } from './pages/Store'; // Import Store
 import { BrowserRouter, Routes, Route } from 'react-router-dom';

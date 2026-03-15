@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { NavItem } from '../types';
 import { Link } from 'react-router-dom';
 
@@ -6,13 +6,11 @@ const navItems: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Store', href: '/store' },
   { label: 'Team', href: '/team' },
-  { label: 'About Us', href: '/about' },
-  { label: 'Admin', href: '/admin' },
-];
+  { label: 'About Us', href: '/about' }];
 
-export const Footer: React.FC = () => {
+export const Footer = () => {
   return (
-    <footer className="bg-white border-t border-gray-100 pt-16 pb-8">
+    <footer className="bg-white border-t border-gray-100 pt-12 pb-6">
       <div className="max-w-7xl mx-auto px-6">
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
@@ -66,11 +64,8 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">(c) All rights reserved</p>
-
-
-
+        <div className="border-t border-gray-100 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-gray-500 text-sm">© 2026 GoTechy. All rights reserved.</p>
         </div>
       </div>
     </footer>

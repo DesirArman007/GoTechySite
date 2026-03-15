@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { addProduct, fetchProducts, deleteProduct, togglePinProduct, updateProduct } from '../../api';
 import Input from './Input';
 import { Trash2, Pin, PinOff, Search, Pencil, X, Check } from 'lucide-react';
+import { Product } from '../../types';
 
 const ProductForm = () => {
     const [formData, setFormData] = useState({
         title: '', image: '', description: '', status: 'In Stock', source: 'amazon', buyLink: ''
     });
     const [statusMsg, setStatusMsg] = useState('');
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [search, setSearch] = useState('');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editData, setEditData] = useState({ title: '', image: '', source: '', buyLink: '' });
@@ -34,7 +35,7 @@ const ProductForm = () => {
     };
 
     const handleDelete = async (id: string, title: string) => {
-        if (!confirm(`Delete product "${title}"?`)) return;
+        if (!window.confirm(`Delete product "${title}"?`)) return;
         try {
             const res = await deleteProduct(id);
             if (res.success) {
@@ -62,7 +63,7 @@ const ProductForm = () => {
         }
     };
 
-    const startEdit = (p: any) => {
+    const startEdit = (p: Product) => {
         setEditingId(p._id);
         setEditData({ title: p.title, image: p.image, source: p.source, buyLink: p.buyLink || '' });
     };
@@ -143,7 +144,7 @@ const ProductForm = () => {
                     <p className="text-gray-500 text-sm">{search ? 'No matching products.' : 'No products found.'}</p>
                 ) : (
                     <div className="space-y-3">
-                        {filteredProducts.map((p: any) => (
+                        {filteredProducts.map((p: Product) => (
                             <div key={p._id} className={`border rounded-lg p-3 hover:bg-gray-50 transition-colors ${p.pinned ? 'border-blue-300 bg-blue-50/50' : 'border-gray-200'}`}>
                                 {editingId === p._id ? (
                                     /* Edit Mode */

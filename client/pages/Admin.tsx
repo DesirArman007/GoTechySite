@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { verifyAdminToken } from '../api';
 import TeamForm from '../components/admin/TeamForm';

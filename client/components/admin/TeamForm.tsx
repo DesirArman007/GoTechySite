@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { addTeamMember, fetchTeam, deleteTeamMember } from '../../api';
 import Input from './Input';
 import { Trash2 } from 'lucide-react';
+import { TeamMember } from '../../types';
 
 const TeamForm = () => {
     const [formData, setFormData] = useState({
@@ -10,7 +11,7 @@ const TeamForm = () => {
     });
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [status, setStatus] = useState('');
-    const [members, setMembers] = useState<any[]>([]);
+    const [members, setMembers] = useState<TeamMember[]>([]);
 
     const loadMembers = () => {
         fetchTeam().then(res => {
@@ -56,7 +57,7 @@ const TeamForm = () => {
     };
 
     const handleDelete = async (id: string, name: string) => {
-        if (!confirm(`Delete team member "${name}"?`)) return;
+        if (!window.confirm(`Delete team member "${name}"?`)) return;
         try {
             const res = await deleteTeamMember(id);
             if (res.success) {
@@ -103,7 +104,7 @@ const TeamForm = () => {
                     <p className="text-gray-500 text-sm">No team members found.</p>
                 ) : (
                     <div className="space-y-3">
-                        {members.map((m: any) => (
+                        {members.map((m: TeamMember) => (
                             <div key={m._id} className="flex items-center justify-between border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
                                 <div className="flex items-center gap-3">
                                     {m.avatar ? (

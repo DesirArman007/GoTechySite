@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Input from './Input';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
@@ -14,14 +14,18 @@ interface InstagramReel {
 
 const InstagramReelForm = () => {
     const [formData, setFormData] = useState({
-        shortcode: '',
-        caption: ''
+        shortcode: ''
     });
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
     const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
     const [reels, setReels] = useState<InstagramReel[]>([]);
     const [status, setStatus] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Get Auth Token for Admin Requests
+    const getAuthToken = () => {
+        return localStorage.getItem('adminToken') || '';
+    };
 
     // Fetch existing reels
     const fetchReels = async () => {
@@ -32,7 +36,7 @@ const InstagramReelForm = () => {
                 setReels(data.data);
             }
         } catch (error) {
-            console.error('Error fetching reels:', error);
+            // Silently fail or track error state if needed
         }
     };
 
@@ -75,11 +79,13 @@ const InstagramReelForm = () => {
         try {
             const formDataToSend = new FormData();
             formDataToSend.append('shortcode', formData.shortcode);
-            formDataToSend.append('caption', formData.caption);
             formDataToSend.append('thumbnail', thumbnailFile);
 
             const res = await fetch(`${API_BASE}/content/instagram`, {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${getAuthToken()}`
+                },
                 body: formDataToSend
             });
 
@@ -87,7 +93,7 @@ const InstagramReelForm = () => {
 
             if (data.success) {
                 setStatus('✅ Instagram reel added successfully!');
-                setFormData({ shortcode: '', caption: '' });
+                setFormData({ shortcode: '' });
                 setThumbnailFile(null);
                 setThumbnailPreview('');
                 fetchReels();
@@ -102,11 +108,14 @@ const InstagramReelForm = () => {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this reel?')) return;
+        if (!window.confirm('Are you sure you want to delete this reel?')) return;
 
         try {
             const res = await fetch(`${API_BASE}/content/instagram/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${getAuthToken()}`
+                }
             });
             const data = await res.json();
 
@@ -151,13 +160,6 @@ const InstagramReelForm = () => {
                     />
                     <p className="text-xs text-gray-500 mt-1">Upload a screenshot or thumbnail of the reel</p>
                 </div>
-
-                <Input
-                    label="Caption (optional)"
-                    value={formData.caption}
-                    onChange={(e) => setFormData({ ...formData, caption: e.target.value })}
-                    placeholder="Description of the reel"
-                />
 
                 {thumbnailPreview && (
                     <div className="mb-4">

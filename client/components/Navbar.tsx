@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { NavItem } from '../types';
 import { Link, NavLink } from 'react-router-dom';
@@ -10,7 +10,7 @@ const navItems: NavItem[] = [
   { label: 'About Us', href: '/about' },
 ];
 
-export const Navbar: React.FC = () => {
+export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

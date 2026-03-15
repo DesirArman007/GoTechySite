@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { fetchProducts } from '../api';
+import { Product } from '../types';
 
-export const Store: React.FC = () => {
-    const [products, setProducts] = useState<any[]>([]);
+export const Store = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         fetchProducts().then(res => {
@@ -15,8 +19,10 @@ export const Store: React.FC = () => {
                     return 0;
                 });
                 setProducts(sorted);
+            } else {
+                setError(true);
             }
-        });
+        }).catch(() => setError(true)).finally(() => setLoading(false));
     }, []);
 
     const pinnedProducts = products.filter(p => p.pinned);
@@ -41,6 +47,7 @@ export const Store: React.FC = () => {
                         {pinnedProducts.map((product, idx) => (
                             <ProductCard
                                 key={idx}
+                                type="product"
                                 {...product}
                                 link={product.buyLink}
                                 meta2={product.source}
@@ -60,6 +67,7 @@ export const Store: React.FC = () => {
                         {otherProducts.map((product, idx) => (
                             <ProductCard
                                 key={idx}
+                                type="product"
                                 {...product}
                                 link={product.buyLink}
                                 meta2={product.source}
@@ -69,8 +77,14 @@ export const Store: React.FC = () => {
                 </div>
             )}
 
-            {products.length === 0 && (
+            {loading && (
                 <p className="text-center text-gray-500">Loading products...</p>
+            )}
+            {!loading && error && (
+                <p className="text-center text-red-500">Failed to load products.</p>
+            )}
+            {!loading && !error && products.length === 0 && (
+                <p className="text-center text-gray-500">No products available at the moment.</p>
             )}
         </div>
     );

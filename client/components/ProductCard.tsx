@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { ContentCardProps } from '../types';
 
 export const ProductCard: React.FC<ContentCardProps> = ({ image, title, meta1, meta2, link }) => (

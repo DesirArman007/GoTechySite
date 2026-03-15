@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Instagram, ArrowUpRight } from 'lucide-react';
 import { ContentCardProps } from '../types';
@@ -63,40 +63,62 @@ const PostCard: React.FC<ContentCardProps> = ({ image, title, meta1, meta2, badg
   </a>
 );
 
-export const ContentShowcase: React.FC = () => {
+interface RawVideo {
+  youtubeId?: string;
+  thumbnail?: string;
+  title?: string;
+  views?: string | number;
+  publishedAt?: string;
+  videoUrl?: string;
+}
+
+interface RawPost {
+  permalink?: string;
+  thumbnail?: string;
+  platformId?: string;
+  mediaUrl?: string;
+  caption?: string;
+  likes?: string | number;
+  publishedAt?: string;
+}
+
+export const ContentShowcase = () => {
   const [videos, setVideos] = useState<ContentCardProps[]>([]);
   const [posts, setPosts] = useState<ContentCardProps[]>([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetchLatestContent().then(res => {
       if (res.success && res.data) {
-        // Transform Backend Videos -> Frontend Props
-        const mappedVideos = res.data.videos.map((v: any) => ({
-          type: 'video',
-          image: v.thumbnail,
+        // Safe mapping
+        const mappedVideos: ContentCardProps[] = (res.data.videos as RawVideo[]).map((v) => ({
+          type: 'video' as const,
+          image: v.thumbnail || '',
           title: v.title,
-          meta1: v.views ? `${v.views} Views` : 'New',
-          meta2: new Date(v.publishedAt).toLocaleDateString(),
+          meta1: `${v.views || 0} views`,
+          meta2: v.publishedAt ? new Date(v.publishedAt).toLocaleDateString() : '',
           badge: 'YouTube',
           link: v.videoUrl
         }));
 
-        // Transform Backend Posts -> Frontend Props
-        const mappedPosts = res.data.posts.map((p: any) => ({
-          type: 'post',
-          // Use thumbnail if available (Reels), otherwise mediaUrl (Images)
-          image: p.thumbnail || p.mediaUrl,
+        const mappedPosts: ContentCardProps[] = (res.data.posts as RawPost[]).map((p) => ({
+          type: 'post' as const,
+          image: p.thumbnail || p.mediaUrl || '',
           title: p.caption || 'Instagram Post',
-          meta1: p.likes ? `${p.likes} Likes` : 'New',
-          meta2: new Date(p.publishedAt).toLocaleDateString(),
+          meta1: `${p.likes || 0} likes`,
+          meta2: p.publishedAt ? new Date(p.publishedAt).toLocaleDateString() : '',
           badge: 'Instagram',
           link: p.permalink
         }));
 
         setVideos(mappedVideos);
         setPosts(mappedPosts);
+      } else {
+        setError(true);
       }
-    });
+    }).catch(() => setError(true)).finally(() => setLoading(false));
   }, []);
 
   return (
@@ -115,14 +137,18 @@ export const ContentShowcase: React.FC = () => {
           </h2>
         </div>
 
-        {videos.length > 0 ? (
+        {loading ? (
+          <p className="text-center text-gray-500">Loading videos...</p>
+        ) : error && videos.length === 0 ? (
+          <p className="text-center text-red-500">Failed to load content.</p>
+        ) : videos.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {videos.map((video, idx) => (
               <VideoCard key={idx} {...video} />
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-500">Loading videos...</p>
+          <p className="text-center text-gray-500">No videos available.</p>
         )}
 
         <div className="mt-12 text-center">
@@ -138,14 +164,18 @@ export const ContentShowcase: React.FC = () => {
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
             Instagram Feed
           </h2>
-          {posts.length > 0 ? (
+          {loading ? (
+            <p className="text-center text-gray-500">Loading posts...</p>
+          ) : error && posts.length === 0 ? (
+            <p className="text-center text-red-500">Failed to load posts.</p>
+          ) : posts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {posts.map((post, idx) => (
                 <PostCard key={idx} {...post} />
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-500">Loading posts...</p>
+            <p className="text-center text-gray-500">No posts available.</p>
           )}
 
           <div className="mt-12 text-center">
