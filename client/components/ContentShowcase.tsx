@@ -4,7 +4,7 @@ import { Play, Instagram, ArrowUpRight } from 'lucide-react';
 import { ContentCardProps } from '../types';
 import { fetchLatestContent } from '../api';
 
-const VideoCard: React.FC<ContentCardProps> = ({ image, title, meta1, meta2, badge, link }) => (
+const VideoCard: React.FC<ContentCardProps> = ({ image, title, meta2, badge, link }) => (
   <a href={link} target="_blank" rel="noopener noreferrer" className="block h-full">
     <motion.div
       whileHover={{ y: -8, boxShadow: "0px 20px 40px -10px rgba(59, 130, 246, 0.15)" }}
@@ -27,9 +27,7 @@ const VideoCard: React.FC<ContentCardProps> = ({ image, title, meta1, meta2, bad
       </div>
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="font-bold text-gray-800 text-sm md:text-base leading-tight mb-2 group-hover:text-brand-600 transition-colors line-clamp-2">{title}</h3>
-        <div className="flex items-center text-xs text-gray-500 gap-2 mt-auto">
-          <span>{meta1 || 'N/A Views'}</span>
-          <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+        <div className="flex items-center text-xs text-gray-500 mt-auto">
           <span>{meta2}</span>
         </div>
       </div>
@@ -37,7 +35,7 @@ const VideoCard: React.FC<ContentCardProps> = ({ image, title, meta1, meta2, bad
   </a>
 );
 
-const PostCard: React.FC<ContentCardProps> = ({ image, title, meta1, meta2, badge, link }) => (
+const PostCard: React.FC<ContentCardProps> = ({ image, title, meta2, badge, link }) => (
   <a href={link} target="_blank" rel="noopener noreferrer" className="block h-full">
     <motion.div
       whileHover={{ y: -8, boxShadow: "0px 20px 40px -10px rgba(192, 38, 211, 0.15)" }}
@@ -53,9 +51,7 @@ const PostCard: React.FC<ContentCardProps> = ({ image, title, meta1, meta2, badg
       </div>
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="font-bold text-gray-800 text-sm mb-1 group-hover:text-pink-600 transition-colors truncate">{title}</h3>
-        <div className="flex items-center text-xs text-gray-500 gap-2 mt-auto">
-          <span>{meta1 || 'N/A Likes'}</span>
-          <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+        <div className="flex items-center text-xs text-gray-500 mt-auto">
           <span>{meta2}</span>
         </div>
       </div>
@@ -97,7 +93,6 @@ export const ContentShowcase = () => {
           type: 'video' as const,
           image: v.thumbnail || '',
           title: v.title,
-          meta1: `${v.views || 0} views`,
           meta2: v.publishedAt ? new Date(v.publishedAt).toLocaleDateString() : '',
           badge: 'YouTube',
           link: v.videoUrl
@@ -107,7 +102,6 @@ export const ContentShowcase = () => {
           type: 'post' as const,
           image: p.thumbnail || p.mediaUrl || '',
           title: p.caption || 'Instagram Post',
-          meta1: `${p.likes || 0} likes`,
           meta2: p.publishedAt ? new Date(p.publishedAt).toLocaleDateString() : '',
           badge: 'Instagram',
           link: p.permalink
