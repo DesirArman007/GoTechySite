@@ -32,7 +32,7 @@ app.use(helmet({
     },
 }));
 
-const allowedOrigins = ['https://go-techy-site.vercel.app'];
+const allowedOrigins = ['https://go-techy-site.vercel.app', "https://www.gotechy.in"];
 if (process.env.NODE_ENV !== 'production') {
     allowedOrigins.push('http://localhost:3000', 'http://localhost:5173',
         'http://127.0.0.1:3000', 'http://127.0.0.1:5173');
@@ -44,6 +44,11 @@ app.use(cors({
 }));
 
 app.use(morgan('dev'));
+
+// Health check endpoint for Render keep-alive
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
 
 // Rate limiting: general (100 req/15min) on all API, stricter (30 req/15min) on admin routes
 app.use('/api', generalLimiter);
