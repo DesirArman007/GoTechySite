@@ -23,7 +23,7 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'", "https://www.instagram.com"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "https:", "blob:"],
-            connectSrc: ["'self'", "https://api.cloudinary.com"],
+            connectSrc: ["'self'", "https://api.cloudinary.com", "https://gotechysite.onrender.com"],
             frameSrc: ["'self'", "https://www.youtube.com", "https://www.instagram.com"],
             mediaSrc: ["'self'", "https:", "data:", "blob:"],
             objectSrc: ["'none'"],
